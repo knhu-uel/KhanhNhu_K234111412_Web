@@ -1,0 +1,155 @@
+<html>
+<head>
+    <title>Ex48 - Nguyễn Hoàng Khánh Như</title>
+    <style>
+    body{
+        margin:0;
+        background:#9fc2f0;
+        font-family:"Times New Roman", serif;
+    }
+    .page{ max-width:680px; margin:12px auto; }
+    .logo{ text-align:center; margin:8px 0; }
+    .logo img{ height:70px; border-radius:12px; box-shadow:0 6px 0 rgba(0,0,0,.2); }
+
+    .panel{
+        background:#aecdff;
+        border:3px solid #7aa5e6;
+        padding:14px 18px 18px;
+    }
+    h1{ text-align:center; margin:10px 0 6px; }
+    .sub{ text-align:center; margin:0 0 10px; }
+    table.form{
+        width:100%;
+        border-collapse:separate;
+        border-spacing:8px;
+        font-size:16px;
+    }
+    td.lbl{ width:140px; white-space:nowrap; vertical-align:top; }
+    input[type="text"], input[type="date"], select, textarea{
+        width:100%; padding:4px 6px;
+        border:1px solid #6e8fd6; background:#fff;
+        font-family:inherit; font-size:15px;
+    }
+    .small{ width:80px; }
+    .zip{ width:100px; }
+    textarea{ height:100px; resize:vertical; }
+    hr{ border:0; height:1px; background: black }
+    .actions{ text-align:center; margin-top:10px; }
+    .btn{
+        border:1px solid #888;
+        background:#e6e6e6;
+        padding:4px 12px;
+        margin:0 6px;
+        cursor:pointer;
+        font-size:14px;
+    }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="logo">
+        <img src="images/Jackson.gif" alt="Jackson Electronics">
+        </div>
+
+        <div class="panel">
+        <h1>Registration Form</h1>
+        <p class="sub">Register your Jackson Electronics product here</p>
+
+        <form id="frm">
+            <table class="form">
+            <tr>
+                <td class="lbl">First Name:</td>
+                <td><input type="text" id="firstName"></td>
+                <td class="lbl">Last Name:</td>
+                <td><input type="text" id="lastName"></td>
+            </tr>
+            <tr>
+                <td class="lbl">Address #1:</td>
+                <td colspan="3"><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="lbl">Address #2:</td>
+                <td colspan="3"><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="lbl">City:</td>
+                <td><input type="text" style="width:160px;"></td>
+                <td class="lbl">State:</td>
+                <td><input type="text" style="width:80px;"></td>
+                <td class="lbl">Zip:</td>
+                <td><input type="text" style="width:100px;"></td>
+            </tr>
+            </table>
+
+            <hr>
+
+            <table class="form">
+            <tr>
+                <td class="lbl">Product:</td>
+                <td><select><option>ScanMaster</option><option>PowerPro</option><option>AudioMax</option><option>Other</option></select></td>
+                <td colspan="2"></td>
+            </tr>
+            <tr>
+                <td class="lbl">Date Purchased:</td>
+                <td><input type="date"></td>
+            </tr>
+            <tr>
+                <td class="lbl">Serial #:</td>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+                <td class="lbl">Used for:</td>
+                <td>
+                <label><input type="radio" name="use" checked> Home</label><br>
+                <label><input type="radio" name="use"> Business</label><br>
+                <label><input type="radio" name="use"> Government</label>
+                </td>
+                <td></td>
+                <td>
+                <label><input type="radio" name="use"> Educational<br>&nbsp;&nbsp;&nbsp;Institution</label><br>
+                <label><input type="radio" name="use"> Other</label>
+                </td>
+            </tr>
+            <tr>
+                <td class="lbl">System (check all<br>that apply):</td>
+                <td colspan="3">
+                <label><input type="checkbox"> Windows</label>
+                &nbsp;&nbsp;
+                <label><input type="checkbox"> UNIX</label>
+                &nbsp;&nbsp;
+                <label><input type="checkbox"> Macintosh</label>
+                &nbsp;&nbsp;
+                <label><input type="checkbox"> Other</label>
+                </td>
+            </tr>
+            </table>
+
+            <hr>
+
+            <table class="form">
+            <tr>
+                <td class="lbl">Comments?:</td>
+                <td colspan="3"><textarea></textarea></td>
+            </tr>
+            </table>
+
+            <div class="actions">
+            <button type="button" class="btn" id="btnRegister">Click to register</button>
+            <button type="button" class="btn" id="btnCancel">Click to cancel</button>
+            </div>
+        </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('btnRegister').onclick=function(){
+        const fn=document.getElementById('firstName').value;
+        const ln=document.getElementById('lastName').value;
+        alert("Registration successful!\n\nThank you, "+(fn+" "+ln).trim()+"!");
+        };
+        document.getElementById('btnCancel').onclick=function(){
+        document.getElementById('frm').reset();
+        };
+    </script>
+</body>
+</html>
