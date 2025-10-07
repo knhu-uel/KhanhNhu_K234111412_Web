@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <title>Nguyễn Hoàng Khánh Như</title>
+        <script>
+            function show_image()
+            {
+                //step 1: get image element
+                img_taylor=document.getElementById("taylor123")
+                //step 2: hide image (using style display -> none)
+                img_taylor.style="display: none";
+            }
+            function hide_image()
+            {
+                //step 1: get image element
+                img_taylor=document.getElementById("taylor123")
+                //step 2: hide image (using style display -> block)
+                img_taylor.style="display: block";
+            }
+        </script>
+    </head>
+    <body>
+        <form name="myform">
+            <input type="radio" name="myimage" id="img1" onchange="show_image()"/>
+            <label for="img1">Show Image</label>
+            <br/>
+            <input type="radio" name="myimage" id="img2" onchange="hide_image()"/>
+            <label for="img2">Hide Image</label>
+            <br/>
+            <img src="Taylor Swift.jpeg" id="taylor123" name="taylor123"
+                style="display: block;"/>
+        </form>
+    </body>
+</html>
