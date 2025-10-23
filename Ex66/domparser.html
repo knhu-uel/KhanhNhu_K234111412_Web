@@ -1,0 +1,97 @@
+<html>
+    <head>
+            <title>EEx66 - Nguyễn Hoàng Khánh Như</title>
+        <style>
+            :root{
+            --header:#e8f4e3;
+            --line:#ddd;
+            }
+            body{
+            font-family: "Times New Roman", Georgia, serif;
+            margin: 24px;
+            }
+            table{
+            border-collapse: collapse;
+            min-width: 520px;
+            }
+            th, td{
+            border: 1px solid var(--line);
+            padding: 10px 14px;
+            font-size: 20px;
+            }
+            thead th{
+            background: var(--header);
+            font-size: 28px;
+            font-weight: 600;
+            text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+
+        <table id="studentTable">
+            <thead>
+                <tr><th colspan="2">Student Information</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <script>
+            const xmlString = `
+                <student>
+                    <id>987456</id>
+                    <name>Marie Curie</name>
+                    <birthday>7/11/1867</birthday>
+                    <gender>Woman</gender>
+                </student>
+                `.trim();
+
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+
+            if (xmlDoc.getElementsByTagName("parsererror").length) {
+                alert("XML không hợp lệ!");
+            } 
+            else {
+            
+            const getText = (tag) =>
+                (xmlDoc.getElementsByTagName(tag)[0]?.textContent || "").trim();
+
+            const data = [
+                ["Student ID:", getText("id")],
+                ["Student Name:", getText("name")],
+                ["Birthday:", getText("birthday")],
+                ["Gender:", getText("gender")]
+            ];
+\
+            const tbody = document.querySelector("#studentTable tbody");
+                data.forEach(([label, value]) => {
+                    const tr = document.createElement("tr");
+
+                    const tdLabel = document.createElement("td");
+                    tdLabel.textContent = label;
+
+                    const tdValue = document.createElement("td");
+                    tdValue.textContent = value;
+
+                    tr.appendChild(tdLabel);
+                    tr.appendChild(tdValue);
+
+                    // 5) Gắn sự kiện theo yêu cầu:
+                    // - onmouseover: nền xanh, chữ trắng
+                    // - onmouseout: nền trắng, chữ đen
+                    tr.addEventListener("mouseover", () => {
+                    tr.style.backgroundColor = "blue";
+                    tr.style.color = "white";
+                    });
+                    tr.addEventListener("mouseout", () => {
+                    tr.style.backgroundColor = "white";
+                    tr.style.color = "black";
+                    });
+
+                    tbody.appendChild(tr);
+                });
+                }
+        </script>
+    </body>
+</html>
