@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <title>Nguyễn Hoàng Khánh Như</title>
+        <script type="text/javascript">
+            var accounts=[
+                {
+                    "UserName":"admin",
+                    "FullName": "Nguyễn Hoàng Khánh Như",
+                    "Password":"123"
+                },
+                {
+                    "UserName":"reporter",
+                    "FullName": "Nguyễn Văn A",
+                    "Password":"123"
+                },
+            ]
+        
+        </script>
+        <script type="text/javascript">
+            function login_system()
+            {
+                for(i=0; i<accounts.length; i++)
+                {
+                    ac=accounts[i]
+                    if(ac.UserName==uid && ac.Password==pwd)
+                    {
+                        return ac
+                    }
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <form name="my_form">
+            <table border="1">
+                <tr>
+                    <td colspan="2">Login to MY ADMIN</td>
+                </tr>
+                <tr>
+                    <td rowspan="6">
+                        <img src="images/ic_login.png">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>

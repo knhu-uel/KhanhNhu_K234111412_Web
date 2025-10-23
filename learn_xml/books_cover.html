@@ -1,0 +1,102 @@
+<html>
+	<head>
+		<title>Nguyễn Hoàng Khánh Như</title>
+	</head>
+	<body>
+		<table border="1">
+            <caption>List of Books</caption>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Year</th>
+                    <th>Cover</th>
+                    <th>Action:</th>
+                </tr>
+            </thead>
+            <tbody id="book_tbody">
+
+            </tbody>
+        </table>
+
+        <script type="text/javascript">
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'dataset/books_cover.xml', true); //lay du lieu ve dung GET
+            xhr.send();
+            xhr.onreadystatechange = function()
+            {
+                if (xhr.readyState == 4 && xhr.status == 200)
+                {
+                    //handling when loading data successfully
+                    var xmlDoc = xhr.responseXML;
+                    var books = xmlDoc.getElementsByTagName('book')
+                    book_tbody = document.getElementById('book_tbody')
+                    for (i = 0; i<books ; length++)
+                    {
+                        book = books[i]
+
+                        title = xmlDoc.getElementsByTagName('title')[0].childNodes[0].nodeValue;
+                        author = xmlDoc.getElementsByTagName('author')[0].childNodes[0].nodeValue;
+                        year = xmlDoc.getElementsByTagName('year')[0].childNodes[0].nodeValue;
+                        cover = xmlDoc.getElementsByTagName('cover')[0].childNodes[0].nodeValue;
+
+                        tr = document.createElement('tr')
+                        td_title = document.createElement('td')
+                        td_author = document.createElement('td')
+                        td_year = document.createElement('td')
+                        td_cover = document.createElement('td')
+                        td_action = document.createElement('td')
+
+                        td_title.innerText = title
+                        td_author.innerText = author
+                        td_year.innerText = year
+
+                        img_cover = document.createElement('img')
+                        img_cover.setAttribute('src', 'img/'+cover)
+                        img_cover.setAttribute('width', '50')
+                        img_cover.setAttribute('height', '100')
+                        img_cover.appendChild(img_cover)
+
+                        img_detail = document.createElement('img')
+                        img_detail.setAttribute('src', 'images/ic_detail.png')
+                        td_action.appendChild(img_detail)
+
+                        img_edit = document.createElement('img')
+                        img_edit.setAttribute('src', 'images/ic_edit.png')
+                        td_action.appendChild(img_edit)
+                        
+                        img_delete = document.createElement('img')
+img_delete.setAttribute('src', 'images/ic_delete.png')
+                        img_delete.setAttribute('title', 'click here to remove this row')
+                        img_delete.setAttribute('style', 'cursor:pointer')
+                        //save memory
+                        img_delete.parent_row = tr
+                        img_delete.onclick = function()
+                        {
+                            title = this.parent_row.childNodes[0].innerText
+                            if(confirm('e muon xoa ['+title+']ha?'))
+                            {
+                                book_tbody.removeChild(this.parent_row)
+                            }
+                        }
+                        td_action.appendChild(img_delete)
+                        
+
+                        tr.appendChild(td_title)
+                        tr.appendChild(td_author)
+                        tr.appendChild(td_year)
+                        tr.appendChild(td_cover)
+                        tr.appendChild(td_action)
+                        book_tbody.appendChild(tr)
+                    }
+                    
+                }
+                else
+                {
+                    //handling when data can't be loaded
+                    //kh add alert o day vi chua run xong
+                }
+            }
+        </script>
+	</body>
+</html>
