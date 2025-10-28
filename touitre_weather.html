@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🌦️ Dự báo thời tiết Việt Nam - Nguyễn Hoàng Khánh Như</title>
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root {
+      --bg: linear-gradient(135deg, #f9fbfd, #f0f4f9);
+      --text: #1a1a1a;
+      --muted: #666;
+      --accent: #0078d7;
+      --card-bg: #fff;
+      --shadow: 0 2px 10px rgba(0,0,0,0.08);
+      --radius: 10px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 40px 24px;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--card-bg); padding: 16px 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+    header i { color: var(--accent); font-size: 24px; }
+    header h1 {
+      font-size: 22px;
+      font-weight: 600;
+      margin: 0;
+    }
+    .controls {
+      display: flex; flex-wrap: wrap;
+      align-items: center; gap: 10px 14px;
+      background: var(--card-bg);
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    label { color: var(--muted); font-weight: 500; }
+    input[type="text"] {
+      width: 260px; max-width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: var(--radius);
+      font-size: 15px;
+    }
+    button {
+      padding: 8px 14px;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.25s;
+    }
+    button:hover { background: #0060b8; }
+    .source {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 800px;
+      margin-top: 20px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    th, td {
+      padding: 14px 10px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+    }
+    th {
+      background: #e8f2fd;
+      color: #003366;
+      font-weight: 600;
+    }
+    tr:last-child td { border-bottom: none; }
+    .icon-cell i {
+      font-size: 26px;
+      color: var(--accent);
+    }
+    caption {
+      caption-side: top;
+      text-align: left;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 8px 0 6px 0;
+      color: #003366;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <i class="fa-solid fa-cloud-sun"></i>
+    <h1>Dự báo thời tiết Việt Nam</h1>
+  </header>
+
+  <section class="controls">
+    <label for="place"><i class="fa-solid fa-location-dot"></i> Tỉnh/Thành:</label>
+    <input id="place" list="vnplaces" type="text" value="Hà Nội"
+           placeholder="Nhập tên tỉnh/thành (VD: Hà Nội, TP.HCM)" />
+    <datalist id="vnplaces">
+      <option value="Hà Nội"></option>
+      <option value="Thành phố Hồ Chí Minh"></option>
+      <option value="Đà Nẵng"></option>
+      <option value="Cần Thơ"></option>
+      <option value="Hải Phòng"></option>
+      <option value="Huế"></option>
+      <option value="Nha Trang"></option>
+      <option value="Đà Lạt"></option>
+      <option value="Quy Nhơn"></option>
+      <option value="Hạ Long"></option>
+    </datalist>
+    <button id="weatherBtn"><i class="fa-solid fa-magnifying-glass"></i> Xem thời tiết</button>
+  </section>
+
+  <div id="source" class="source">Chưa tải dữ liệu</div>
+
+  <table>
+    <caption><i class="fa-solid fa-table"></i> Bảng dữ liệu thời tiết</caption>
+    <thead>
+      <tr>
+        <th>Địa điểm</th>
+        <th>Nhiệt độ (°C)</th>
+        <th>Độ mây (%)</th>
+        <th>Biểu tượng</th>
+      </tr>
+    </thead>
+    <tbody id="tt_weather_tbody">
+      <tr><td colspan="4">Chưa có dữ liệu</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    const TZ = 'Asia/Ho_Chi_Minh';
+
+    function renderRow({ name, temperature, clouds, iconClass, iconLabel }) {
+      const tbody = document.getElementById('tt_weather_tbody');
+      tbody.innerHTML = '';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${name || ''}</td>
+        <td>${temperature ?? ''}</td>
+        <td>${clouds ?? ''}</td>
+        <td class="icon-cell"><i class="fa-solid ${iconClass}" title="${iconLabel}"></i></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function weatherCodeToFA(code, isDay) {
+      const c = Number(code);
+      if ([0].includes(c)) return isDay ? 'fa-sun' : 'fa-moon';
+      if ([1,2].includes(c)) return 'fa-cloud-sun';
+      if ([3].includes(c)) return 'fa-cloud';
+      if ([45,48].includes(c)) return 'fa-smog';
+      if ([51,53,55,56,57].includes(c)) return 'fa-cloud-rain';
+      if ([61,63,65,80,81,82].includes(c)) return 'fa-cloud-showers-heavy';
+      if ([66,67].includes(c)) return 'fa-cloud-rain';
+      if ([71,73,75,77,85,86].includes(c)) return 'fa-snowflake';
+      if ([95,96,99].includes(c)) return 'fa-cloud-bolt';
+      return 'fa-cloud';
+    }
+
+    function weatherCodeLabel(code) {
+      const map = {
+        0:'Trời quang',1:'Ít mây',2:'Mây vừa',3:'Nhiều mây',
+        45:'Sương mù',48:'Sương mù đóng băng',51:'Mưa phùn nhẹ',53:'Mưa phùn vừa',
+        55:'Mưa phùn lớn',56:'Mưa phùn lạnh nhẹ',57:'Mưa phùn lạnh lớn',61:'Mưa nhẹ',
+        63:'Mưa vừa',65:'Mưa lớn',66:'Mưa lạnh nhẹ',67:'Mưa lạnh lớn',71:'Tuyết nhẹ',
+        73:'Tuyết vừa',75:'Tuyết lớn',77:'Hạt tuyết',80:'Mưa rào nhẹ',81:'Mưa rào vừa',
+        82:'Mưa rào lớn',85:'Mưa tuyết rào nhẹ',86:'Mưa tuyết rào lớn',95:'Dông',
+        96:'Dông có mưa đá nhẹ',99:'Dông có mưa đá lớn'
+      };
+      return map[Number(code)] || 'Thời tiết';
+    }
+
+    function viCountryName(c) {
+      if (!c) return '';
+      if (c === 'Vietnam') return 'Việt Nam';
+      return c;
+    }
+
+    function normalizePlaceInput(name) {
+      const s = String(name || '').trim();
+      const lower = s.toLowerCase();
+      const map = {
+        'tphcm': 'Thành phố Hồ Chí Minh','tp. hcm': 'Thành phố Hồ Chí Minh',
+        'hcm':'Thành phố Hồ Chí Minh','sai gon':'Thành phố Hồ Chí Minh','saigon':'Thành phố Hồ Chí Minh',
+        'hn':'Hà Nội','ha noi':'Hà Nội','danang':'Đà Nẵng','da nang':'Đà Nẵng',
+        'haiphong':'Hải Phòng','hai phong':'Hải Phòng','hue':'Huế','thua thien hue':'Thừa Thiên Huế',
+        'can tho':'Cần Thơ','nha trang':'Nha Trang','dalat':'Đà Lạt','da lat':'Đà Lạt'
+      };
+      return map[lower] || s;
+    }
+
+    function geocodeByName(name) {
+      return new Promise((resolve) => {
+        const api = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&language=vi&count=1`;
+        fetch(api)
+          .then(r => r.json())
+          .then(data => {
+            const r = data?.results?.[0];
+            resolve({ lat: r?.latitude, lon: r?.longitude, name: r?.name, country: r?.country, admin1: r?.admin1 });
+          })
+          .catch(() => resolve({}));
+      });
+    }
+
+    function callOpenMeteo(lat, lon) {
+      return fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=cloudcover&timezone=${encodeURIComponent(TZ)}`)
+        .then(r => r.json())
+        .then(data => ({ data }))
+        .catch(() => ({ data: null }));
+    }
+
+    function partsInTZ(date) {
+      const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit' });
+      const p = fmt.formatToParts(date);
+      const get = t => p.find(x => x.type === t)?.value || '';
+      return { y: get('year'), m: get('month'), d: get('day'), h: get('hour') };
+    }
+    function currentHourKey() {
+      const p = partsInTZ(new Date());
+      return `${p.y}-${p.m}-${p.d}T${p.h}:00`;
+    }
+
+    async function showWeatherForPlace(placeName) {
+      const srcEl = document.getElementById('source');
+      srcEl.textContent = '⏳ Đang tải dữ liệu...';
+      const geo = await geocodeByName(placeName);
+      const lat = geo.lat ?? 21.028, lon = geo.lon ?? 105.834;
+      const res = await callOpenMeteo(lat, lon);
+      if (!res.data) { srcEl.textContent = '❌ Không thể lấy dữ liệu thời tiết'; return; }
+
+      const cw = res.data.current_weather || {};
+      const times = res.data.hourly?.time || [];
+      const cloudsArr = res.data.hourly?.cloudcover || [];
+      let clouds = '';
+      if (times.length && cloudsArr.length) {
+        const idx = times.indexOf(currentHourKey());
+        clouds = cloudsArr[idx !== -1 ? idx : 0];
+      }
+      const nameLabel = geo.name ? `${geo.name}${geo.admin1 ? ', ' + geo.admin1 : ''}${geo.country ? ', ' + viCountryName(geo.country) : ''}` : placeName;
+      const iconClass = weatherCodeToFA(cw.weathercode, cw.is_day);
+      const iconLabel = weatherCodeLabel(cw.weathercode);
+
+      renderRow({ name: nameLabel, temperature: cw.temperature, clouds, iconClass, iconLabel });
+      srcEl.innerHTML = `<i class="fa-solid fa-database"></i> Nguồn: Open-Meteo`;
+    }
+
+    document.getElementById('weatherBtn').addEventListener('click', () => {
+      const raw = document.getElementById('place').value.trim() || 'Hà Nội';
+      showWeatherForPlace(normalizePlaceInput(raw));
+    });
+
+    window.addEventListener('load', () => showWeatherForPlace('Hà Nội'));
+  </script>
+</body>
+</html>
